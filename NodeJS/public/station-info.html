@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Station Info</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; }
+    .container { max-width: 700px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  h2 { color: #003366; text-align: center; }
+  .station-img { display: block; margin: 0 auto 20px; max-width: 120px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #003366; color: #fff; }
+    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; margin-right: 8px; }
+    .edit-btn { background: #007bff; color: #fff; }
+    .save-btn { background: #28a745; color: #fff; }
+    #message { display:none; margin-bottom:16px; padding:10px; border-radius:4px; font-weight:bold; }
+  </style>
+  <script>
+  // Map field names to table row order
+  const fieldMap = ['station', 'locator', 'address', 'postcode', 'operatorName', 'email'];
+
+    async function loadStationInfo() {
+      try {
+        const res = await fetch('/stationInfo');
+        const info = await res.json();
+        document.querySelectorAll('.editable').forEach(function(cell, idx) {
+          cell.textContent = info[fieldMap[idx]] || '';
+        });
+      } catch (err) {
+        console.error('Failed to load station info:', err);
+      }
+    }
+
+    let originalValues = [];
+    function enableEdit() {
+      originalValues = [];
+      document.querySelectorAll('.editable').forEach(function(cell) {
+        originalValues.push(cell.textContent);
+        cell.contentEditable = true;
+        cell.style.background = '#eef';
+      });
+      document.getElementById('editBtn').style.display = 'none';
+      document.getElementById('saveBtn').style.display = 'inline-block';
+      document.getElementById('cancelBtn').style.display = 'inline-block';
+    }
+
+    function showMessage(msg, color = '#28a745') {
+      const el = document.getElementById('message');
+      el.textContent = msg;
+      el.style.display = 'block';
+      el.style.background = color;
+      setTimeout(() => { el.style.display = 'none'; }, 3000);
+    }
+
+    async function saveEdit() {
+      const data = {};
+      document.querySelectorAll('.editable').forEach(function(cell, idx) {
+        data[fieldMap[idx]] = cell.textContent;
+      });
+      try {
+        const res = await fetch('/stationInfo', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          showMessage('Station info saved!', '#28a745');
+        } else {
+          showMessage('Failed to save station info.', '#c00');
+        }
+      } catch (err) {
+        showMessage('Error saving station info.', '#c00');
+      }
+      document.querySelectorAll('.editable').forEach(function(cell) {
+        cell.contentEditable = false;
+        cell.style.background = '';
+      });
+      document.getElementById('editBtn').style.display = 'inline-block';
+      document.getElementById('saveBtn').style.display = 'none';
+      document.getElementById('cancelBtn').style.display = 'none';
+    }
+
+    function cancelEdit() {
+      document.getElementById('cancelConfirm').style.display = 'block';
+      document.getElementById('editBtn').style.display = 'none';
+      document.getElementById('saveBtn').style.display = 'none';
+      document.getElementById('cancelBtn').style.display = 'none';
+    }
+
+    function confirmCancelEdit(yes) {
+      document.getElementById('cancelConfirm').style.display = 'none';
+      if (yes) {
+        document.querySelectorAll('.editable').forEach(function(cell, idx) {
+          cell.textContent = originalValues[idx];
+          cell.contentEditable = false;
+          cell.style.background = '';
+        });
+        document.getElementById('editBtn').style.display = 'inline-block';
+        showMessage('Changes discarded.', '#888');
+      } else {
+        document.querySelectorAll('.editable').forEach(function(cell) {
+          cell.contentEditable = true;
+          cell.style.background = '#eef';
+        });
+        document.getElementById('saveBtn').style.display = 'inline-block';
+        document.getElementById('cancelBtn').style.display = 'inline-block';
+      }
+    }
+
+    window.onload = loadStationInfo;
+  </script>
+</head>
+<body>
+  <div class="container">
+  <img src="/Station.jpg" alt="Station Logo" class="station-img">
+  <h2>Station Info</h2>
+    <div style="text-align:right; margin-bottom:10px;">
+      <a href="/" style="color:#003366; font-weight:bold; text-decoration:none;">&larr; Home</a>
+    </div>
+    <div id="message"></div>
+    <div id="cancelConfirm" style="display:none; margin-bottom:16px; padding:10px; border-radius:4px; background:#ffc; color:#333; font-weight:bold;">
+      Cancel will lose any changes made.<br>
+      <button id="cancelYes" class="btn" style="background:#c00; color:#fff;" onclick="confirmCancelEdit(true)">Yes</button>
+      <button id="cancelNo" class="btn" style="background:#888; color:#fff;" onclick="confirmCancelEdit(false)">No</button>
+    </div>
+    <table>
+      <tr>
+        <td><strong>Station</strong></td>
+        <td class="editable">Your Station</td>
+      </tr>
+      <tr>
+        <td><strong>Locator</strong></td>
+        <td class="editable">Your Locator</td>
+      </tr>
+      <tr>
+        <td><strong>Address</strong></td>
+        <td class="editable">Your Address</td>
+      </tr>
+      <tr>
+        <td><strong>Postcode</strong></td>
+        <td class="editable">Your Postcode</td>
+      </tr>
+      <tr>
+        <td><strong>Operator Name</strong></td>
+        <td class="editable">Your Name</td>
+      </tr>
+      <tr>
+        <td><strong>Email</strong></td>
+        <td class="editable">your@email.com</td>
+      </tr>
+    </table>
+    <button id="editBtn" class="btn edit-btn" onclick="enableEdit()">Edit</button>
+    <button id="saveBtn" class="btn save-btn" onclick="saveEdit()" style="display:none;">Save</button>
+    <button id="cancelBtn" class="btn" style="background:#888; color:#fff; display:none;" onclick="cancelEdit()">Cancel</button>
+  </div>
+</body>
+</html>

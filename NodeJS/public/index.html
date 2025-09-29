@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amateur Radio QSO Record</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header { background: #003366; color: #fff; padding: 20px; text-align: center; }
+    nav { background: #eee; padding: 10px; display: flex; justify-content: center; gap: 20px; }
+    nav a { color: #003366; text-decoration: none; font-weight: bold; }
+    .container { max-width: 800px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    img { max-width: 100%; height: auto; display: block; margin: 0 auto 20px; }
+    .close-btn { background: #c00; color: #fff; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; float: right; }
+  </style>
+  <script>
+    function closeApp() {
+      window.open('', '_self', ''); window.close();
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <h1>Amateur Radio QSO Record</h1>
+    <button class="close-btn" onclick="closeApp()">Close</button>
+  </header>
+  <nav>
+  <a href="/">Home</a>
+  <a href="/contacts">Contacts</a>
+  <a href="#">Log QSO</a>
+  <a href="/station-info.html">Station Info</a>
+  <a href="#">About</a>
+  </nav>
+  <div class="container">
+    <img src="/logo.jpg" alt="Ham Radio Logo">
+    <p>Welcome to the Amateur Radio QSO Record application. Use the menu to log and view your QSOs.</p>
+  </div>
+</body>
+</html>
