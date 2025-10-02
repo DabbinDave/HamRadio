@@ -31,6 +31,25 @@ const StationInfo = sequelize.define('StationInfo', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: ''
+  },
+  cqZone: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    validate: {
+      min: 0,
+      max: 99
+    }
+  },
+  latitude: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: ''
+  },
+  longitude: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: ''
   }
 });
 
