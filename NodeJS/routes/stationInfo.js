@@ -23,9 +23,13 @@ router.put('/', async (req, res) => {
       info = await StationInfo.create({});
     }
     // Only update allowed fields
-    const fields = ['station', 'locator', 'address', 'postcode', 'operatorName', 'email'];
+  const fields = ['station', 'locator', 'address', 'postcode', 'operatorName', 'email', 'cqZone', 'latitude', 'longitude'];
     const updateData = {};
-    fields.forEach(f => { if (req.body[f] !== undefined) updateData[f] = req.body[f]; });
+    fields.forEach(f => {
+      if (req.body[f] !== undefined) {
+        updateData[f] = req.body[f];
+      }
+    });
     await info.update(updateData);
     res.json(info);
   } catch (err) {
